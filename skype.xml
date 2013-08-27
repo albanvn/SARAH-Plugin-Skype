@@ -1,0 +1,177 @@
+﻿<grammar version="1.0" xml:lang="fr-FR" mode="voice" root="ruleskypemain" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
+  <rule id="ruleskypemain">
+    <item weight="2">Sarah</item>
+    <one-of>
+      <item><ruleref uri="#ruleskype1"/></item>
+      <item><ruleref uri="#ruleskype2"/></item>
+      <item><ruleref uri="#ruleskype3"/></item>
+      <item><ruleref uri="#ruleskype4"/></item>
+      <item><ruleref uri="#ruleskype5"/></item>
+    </one-of>
+  </rule>
+  <rule id="ruleskype1" scope="public">
+    <example>Sarah Réponds à Skype</example>
+    <tag>out.action=new Object();</tag>
+    <one-of>
+      <item>Peux tu répondre<tag>out.action.mode="answer";</tag></item>
+      <item>Peux tu répondre à l'appel<tag>out.action.mode="answer";</tag></item>
+      <item>Prends l'appel<tag>out.action.mode="answer";</tag></item>
+      <item>Peux tu prendre l'appel<tag>out.action.mode="answer";</tag></item>
+      <item>Réponds<tag>out.action.mode="answer";</tag></item>
+      <item>Réponds à l'appel<tag>out.action.mode="answer";</tag></item>
+      <item>Raccroche<tag>out.action.mode="finish";</tag></item>
+      <item>Raccroche l'appel<tag>out.action.mode="finish";</tag></item>
+      <item>Peux tu raccrocher<tag>out.action.mode="finish";</tag></item>
+      <item>Ajoute la vidéo à l'appel<tag>out.action.mode="videoon";</tag></item>
+      <item>Ajoute la vidéo<tag>out.action.mode="videoon";</tag></item>
+      <item>Allume la vidéo<tag>out.action.mode="videoon";</tag></item>
+      <item>Mets la vidéo<tag>out.action.mode="videoon";</tag></item>
+      <item>Lance la vidéo<tag>out.action.mode="videoon";</tag></item>
+      <item>Stop la vidéo<tag>out.action.mode="videooff";</tag></item>
+      <item>Arrête la vidéo<tag>out.action.mode="videooff";</tag></item>
+      <item>Qui est connecté<tag>out.action.mode="listconnected";</tag></item>
+      <item>Oui, appelle le<tag>out.action.mode="calllast";</tag></item>
+      <item>Oui, appelle la<tag>out.action.mode="calllast";</tag></item>
+      <item>Oui, appelle le avec la vidéo<tag>out.action.mode="calllastvideo";</tag></item>
+      <item>Oui, appelle la avec la vidéo<tag>out.action.mode="calllastvideo";</tag></item>
+    </one-of>
+    <item repeat="0-1">
+      <one-of>
+		<item>à skaillpe</item>
+		<item>skaillpe</item>
+		<item>sur skaillpe</item>
+      </one-of>
+    </item>
+    <item repeat="0-1">
+      <one-of>
+        <item>s'il te plait</item>
+        <item>si il te plait</item>
+        <item>se te plait</item>
+      </one-of>
+    </item>
+    <tag>out.action._attributes.uri="http://127.0.0.1:8080/sarah/skype";</tag>
+  </rule> 
+  <rule id="ruleskype2" scope="public">
+    <tag>out.action=new Object();</tag>
+    <tag>out.action.mode="call";</tag>
+    <one-of>
+      <item>Appelle</item>
+      <item>Peux tu appeller</item>
+    </one-of>
+	<!-- Automatic Generation §1 -->
+	<!-- �1 Automatic Generation -->
+    <item repeat="0-1">
+      <one-of>
+         <item>en vidéo<tag>out.action.mode+="video";</tag></item>
+         <item>avec la vidéo<tag>out.action.mode+="video";</tag></item>
+         <item>avec la vidéo conférence<tag>out.action.mode+="video";</tag></item>
+         <item>et lance la vidéo<tag>out.action.mode+="video";</tag></item>
+     </one-of>
+    </item>
+    <item repeat="0-1">
+      <one-of>
+        <item>sur skaillpe</item>
+      </one-of>
+    </item>
+    <item repeat="0-1">
+      <one-of>
+        <item>s'il te plait</item>
+        <item>si il te plait</item>
+        <item>se te plait</item>
+      </one-of>
+    </item>
+    <tag>out.action._attributes.uri="http://127.0.0.1:8080/sarah/skype";</tag>
+  </rule>
+  <rule id="ruleskype3" scope="public">
+    <tag>out.action=new Object();</tag>
+    <tag>out.action.mode="isconnected";</tag>
+    <item repeat="0-1">
+      <one-of>
+        <item>Peux tu me dire si</item>
+        <item>Est ce que</item>
+	  </one-of>
+    </item>
+	<!-- Automatic Generation §2 -->
+	<!-- �2 Automatic Generation -->
+    <one-of>
+      <item>est connecté</item>
+      <item>est il connecté</item>
+      <item>est est ligne</item>
+    </one-of>
+    <item repeat="0-1">
+      <one-of>
+        <item>sur skaillpe</item>
+        <item>à skaillpe</item>
+      </one-of>
+    </item>
+    <item repeat="0-1">
+      <one-of>
+        <item>s'il te plait</item>
+        <item>si il te plait</item>
+        <item>se te plait</item>
+      </one-of>
+    </item>
+    <tag>out.action._attributes.uri="http://127.0.0.1:8080/sarah/skype";</tag>
+  </rule>
+  <rule id="ruleskype4" scope="public">
+    <tag>out.action=new Object();</tag>
+    <one-of>
+      <item>Est ce que je suis en ligne<tag>out.action.mode="getstatus";</tag></item>
+      <item>Est ce que je suis hors ligne<tag>out.action.mode="getstatus";</tag></item>
+      <item>Quel est mon état<tag>out.action.mode="getstatus";</tag></item>
+      <item>Quel est mon statut<tag>out.action.mode="getstatus";</tag></item>
+      <item>Suis je en ligne<tag>out.action.mode="getstatus";</tag></item>
+      <item>Suis je hors ligne<tag>out.action.mode="getstatus";</tag></item>
+      <item>Mets moi hors ligne<tag>out.action.mode="disconnect";</tag></item>
+      <item>Mets moi disponible<tag>out.action.mode="disconnect";</tag></item>
+      <item>Mets moi en ligne<tag>out.action.mode="connect";</tag></item>
+      <item>Mets moi en occupé<tag>out.action.mode="busy";</tag></item>
+      <item>Mets moi en disponible<tag>out.action.mode="busy";</tag></item>
+      <item>Déconnectes moi<tag>out.action.mode="disconnect";</tag></item>
+      <item>Connectes moi<tag>out.action.mode="disconnect";</tag></item>
+      <item>Mets à jour ma liste d'amis <tag>out.action.mode="selectfriend";</tag></item>
+      <item>Mets ma liste d'amis à jour<tag>out.action.mode="selectfriend";</tag></item>
+      <item>Mets en plein écran<tag>out.action.mode="fullscreen";</tag></item>
+	</one-of>
+    <item repeat="0-1">
+      <one-of>
+		<item>à skaillpe</item>
+		<item>skaillpe</item>
+		<item>sur skaillpe</item>
+      </one-of>
+    </item>
+    <item repeat="0-1">
+      <one-of>
+        <item>s'il te plait</item>
+        <item>si il te plait</item>
+        <item>se te plait</item>
+      </one-of>
+    </item>
+    <tag>out.action._attributes.uri="http://127.0.0.1:8080/sarah/skype";</tag>
+  </rule>
+  <rule id="ruleskype5" scope="public">
+    <tag>out.action=new Object();</tag>
+	<tag>out.action.mode="connectaccount";</tag>
+	<one-of>
+	  <item>Connecte le compte</item>
+	  <item>Connecte la session</item>
+	  <item>Ouvre la session</item>
+	</one-of>
+	<!-- Automatic Generation §3 -->
+	<!-- �3 Automatic Generation -->
+    <item repeat="0-1">
+      <one-of>
+		<item>skaillpe</item>
+		<item>sur skaillpe</item>
+      </one-of>
+    </item>
+    <item repeat="0-1">
+      <one-of>
+        <item>s'il te plait</item>
+        <item>si il te plait</item>
+        <item>se te plait</item>
+      </one-of>
+    </item>
+    <tag>out.action._attributes.uri="http://127.0.0.1:8080/sarah/skype";</tag>
+  </rule>
+</grammar>
