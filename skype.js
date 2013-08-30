@@ -115,6 +115,6 @@ exports.action = function(data, callback, config, SARAH)
       if (data.mode=="finish") text=cst_msg_finishcall;
       if (data.mode=="fullscreen") text=cst_msg_fullscreen;
 	  if (text!="") callback({'tts': text});
-      SARAH.remote({ 'run' : cst_wscript, 'runp' : gs_script_skype_path + " " + data.mode + " " + __dirname + data.optionnal});
+      SARAH.remote({ 'run' : cst_wscript, 'runp' : gs_script_skype_path + " " + data.mode + " " + __dirname + optionnal});
     }
 }
