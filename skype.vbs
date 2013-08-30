@@ -13,7 +13,6 @@
 'Convert Unicode Friend Name from skype to ascii code for xml file
 'Minimize skype after connect account done
 'message to tell that skype is connected
-'Multi liste of friends to get/save when changing account
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 'Option Explicit
@@ -60,7 +59,7 @@ if args.count=0 Then
   ' If no argument then start in daemon mode
   StartTime=0
   If CountProcess("wscript.exe", "skype.vbs") = 1 Then
-    init_Skype
+    init_Skype 
     Do While True  
       WScript.Sleep(60000) 
     Loop
@@ -86,9 +85,9 @@ Else
 		Skype_StopVideo()
     case "selectfriendsilent"
 		Skype_WaitConnexion		
-		Skype_SelectFriend args,true
+		Skype_SelectFriend args, true
     case "selectfriend"
-		Skype_SelectFriend args,false
+		Skype_SelectFriend args, false
     case "fullscreen"
 		Skype_FullScreen()
     case "cleanwscript"
@@ -136,7 +135,7 @@ Sub init_Skype()
   oSkype.Attach
   cUserStatus_Online= oSkype.Convert.TextToUserStatus("ONLINE")
   cUserStatus_Offline = oSkype.Convert.TextToUserStatus("OFFLINE")
-  cUserStatus_Busy = oSkype.Convert.TextToUserStatus("BUSY")
+  cUserStatus_Busy = 4
   CR=Chr(13) + Chr(10)
   ' Check that user is connected
 '  If oSkype.CurrentUserStatus <> cUserStatus_Online Then
@@ -332,24 +331,23 @@ Sub Skype_SelectFriend(ByVal Args, Byval Silent)
 		config_xml = config_xml +  CR + "		<item>" + name + "<tag>out.action.name=""" + name + """;</tag></item>"
         i=i+1		
 	  Next	
-	  config_xml=config_xml + CR + "	</one-of>"
-	  FileName=Directory + "\\" + "skype.xml"
-	  content=ReadFile(FileName)
-	  ' Replace in skype.xml the automatic filled friends section with the previous selected items
-      replaceString=Chr(167) + "1 -->" + CR + config_xml + CR + "	<!-- " + Chr(167) + "1"
-	  strNewString=ReplacePattern(content, "§1[^§]*§1", replaceString)
-      replaceString=Chr(167) + "2 -->" + CR + config_xml + CR + "	<!-- " + Chr(167) + "2"
-	  finalstring=ReplacePattern(strNewString, "§2[^§]*§2", replaceString)
-	  WriteFile FileName, finalstring
-      If Silent<>true Then
-  	    send_http_request(sarah_tts_url + sarah_tts_selectfriendok)
-      End If
 	End If
   Next  
-  If Found=0 Then
-      If Silent<>true Then
-	     send_http_request(sarah_tts_url + sarah_tts_notfoundgroup + " " + GroupName)
-	  End If
+  config_xml=config_xml + CR + "	</one-of>"
+  FileName=Directory + "\\" + "skype.xml"
+  content=ReadFile(FileName)
+  ' Replace in skype.xml the automatic filled friends section with the previous selected items
+  replaceString=Chr(167) + "1 -->" + CR + config_xml + CR + "	<!-- " + Chr(167) + "1"
+  strNewString=ReplacePattern(content, "§1[^§]*§1", replaceString)
+  replaceString=Chr(167) + "2 -->" + CR + config_xml + CR + "	<!-- " + Chr(167) + "2"
+  finalstring=ReplacePattern(strNewString, "§2[^§]*§2", replaceString)
+  WriteFile FileName, finalstring
+  If Silent<>true Then
+    If found=0 Then
+	  send_http_request(sarah_tts_url + sarah_tts_notfoundgroup + " " + GroupName)
+    Else
+  	  send_http_request(sarah_tts_url + sarah_tts_selectfriendok)
+    End If
   End If
 End Sub
 
