@@ -1,0 +1,18 @@
+**************************************
+* Plugin Skype for SARAH project     *
+* Author:Alban Vidal-Naquet          *
+* Email:alban@albanvn.net            *
+**************************************
+Changelog.txt
+
+V1.0 - 28/08/2013
+  Initial release
+  
+V1.1 - XX/XX/20XX
+  -Blank list in friend list is now supported
+
+TODO:  
+  -Add call to selectfriend on startup even when skype is not connnected
+  -Convert Unicode from Handle SKYPE to ascii
+  -Minimize skype after connexion on account done
+  -message to tell that skype is connected when new account connexion
