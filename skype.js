@@ -67,7 +67,6 @@ exports.action = function(data, callback, config, SARAH)
        }		 
        if (data.mode=="callvideo)") callback({'tts': cst_msg_callingvideo1 + " " + data.name + " " + cst_msg_callingvideo2});
 	   if (data.mode=="call") callback({'tts': cst_msg_calling + " " + data.name});
-	   console.log("here");
        if (data.mode=="isconnected")
 	   {
 	     callback({'tts': cst_msg_isconnected_b + " " + data.name + " " + cst_msg_isconnected_e});
@@ -100,6 +99,7 @@ exports.action = function(data, callback, config, SARAH)
 	else
     {
 	  var cfg=SARAH.ConfigManager.getConfig();
+	  var text="";
 	  cfg = cfg.modules.skype
 	  optionnal="";
 	  if (data.mode=="selectfriend")

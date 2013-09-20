@@ -53,6 +53,8 @@ dim cUserStatus_Offline
 dim cUserStatus_Busy
 dim CR
 
+on error resume next
+
 ' main()
 Set args  = Wscript.Arguments
 if args.count=0 Then
