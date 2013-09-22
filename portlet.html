@@ -1,0 +1,16 @@
+<% stylesheet('assets/'+key+'/portlet.css') %>
+<% 
+  var skype = SARAH.ConfigManager.getModule(key); 
+// var info = skype.getBasic(SARAH.ConfigManager.getConfig()); 
+%>
+
+<div class="logo">
+  <a href="sarah/<%=key%>" class="ajax"><img src="/assets/<%=key%>/images/skype.png"></a>
+</div>
+
+<div class="text">
+  <br/><span class="title">Skype</span>
+  <br/><div class="author">by AVN</div>
+  <br/><span class="status">Account:</span>
+  <br/><span class="status">State:</span>
+</div>
