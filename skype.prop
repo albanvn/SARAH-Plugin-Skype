@@ -2,7 +2,7 @@
   "modules" : { 
     "skype"  : {
       "description": "Permet de prendre et de passer des appels Skype via Sarah",
-      "version" : "1.0",
+      "version" : "1.1",
 	  "Skype_path" : "C:\\Program Files\\Skype\\Phone",
 	  "Skype_list" : "Favoris",
 	  "Name1" : "",
