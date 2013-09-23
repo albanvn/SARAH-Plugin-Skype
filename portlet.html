@@ -1,7 +1,7 @@
 <% stylesheet('assets/'+key+'/portlet.css') %>
 <% 
   var skype = SARAH.ConfigManager.getModule(key); 
-// var info = skype.getBasic(SARAH.ConfigManager.getConfig()); 
+  var info = skype.getBasic(SARAH); 
 %>
 
 <div class="logo">
@@ -10,7 +10,8 @@
 
 <div class="text">
   <br/><span class="title">Skype</span>
-  <br/><div class="author">by AVN</div>
-  <br/><span class="status">Account:</span>
-  <br/><span class="status">State:</span>
+  <div class="author">by AVN</div>
+  <span class="status">Compte:<%=info.account%></span>
+  <br/><span class="status">Etat:<%=info.status%></span>
+  <br/><span class="status">Der. appel entrant:<%=info.lastcall%></span>
 </div>

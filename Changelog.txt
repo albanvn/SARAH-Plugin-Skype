@@ -1,18 +1,38 @@
-**************************************
-* Plugin Skype for SARAH project     *
-* Author:Alban Vidal-Naquet          *
-* Email:alban@albanvn.net            *
-**************************************
-Changelog.txt
+********************************************
+* Plugin Skype for SARAH project           *
+* http://encausse.wordpress.com/s-a-r-a-h/ *
+* Author:Alban Vidal-Naquet                *
+* Email:alban@albanvn.net                  *
+********************************************
 
-V1.0 - 28/08/2013
-  Initial release
-  
-V1.1 - XX/XX/20XX
-  -Blank list in friend list is now supported
+Changelog.txt
+-------------
 
 TODO:  
   -Add call to selectfriend on startup even when skype is not connnected
   -Convert Unicode from Handle SKYPE to ascii
   -Minimize skype after connexion on account done
   -message to tell that skype is connected when new account connexion
+
+
+V1.1 - XX/XX/20XX
+  -Blank list in friend list is now supported
+  -Add ChangeLog.txt
+  -Correct bug on selectfriend request (favorites list name was missing)
+  -Correct bug on skype busy mode
+  -Now list of friend can be empty
+  -On error resume next added in vbs
+  -Review doc
+  -Do some cosmetic change
+  -Add portlet
+  -Add infos on portlet (account, status, last incoming call)
+  -Add default action on skype icon in portlet
+  -Add Licence.txt
+  -Use SARAH.speak instead of callback & tts option
+  -Correct bug on gs_lastcall feature
+  -Add test mode for portlet
+
+V1.0 - 28/08/2013
+  Initial release
+  
+
