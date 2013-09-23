@@ -40,7 +40,7 @@ const sarah_tts_notfoundgroup="Je ne trouve pas le groupe"
 const sarah_tts_skypeaccount="Connecté au compte skaillpe de "
 const sarah_tts_skypenotrunning="Skaillpe n'est pas actuellement lancé"
 const sarah_tts_accountnotconnected="Aucun compte connecté actuellement à Skaillpe"
-const sarah_tts_thestatusis=" et le statut est: "
+const sarah_tts_thestatusis=". Le statut est: "
 const sarah_jsurl="http://127.0.0.1:8080/sarah/skype"
 
 const callin_freqtimer=8000
@@ -179,7 +179,7 @@ Sub Skype_Test()
   If g_status="" Then
     send_http_request(sarah_tts_url+sarah_tts_skypeaccount+g_account)
   Else
-    send_http_request(sarah_tts_url+sarah_tts_skypeaccount+g_account+sarah_thestatusis+g_status)
+    send_http_request(sarah_tts_url+sarah_tts_skypeaccount+g_account+sarah_tts_thestatusis+g_status)
   End If
 End Sub
 
