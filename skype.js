@@ -21,120 +21,192 @@ const cst_msg_isconnected_b="Je regarde si";
 const cst_msg_isconnected_e="est connécté";
 const cst_msg_getstatus="Je regarde votre statut skaillpe";
 const cst_msg_connect="Je connecte votre compte skaillpe";
+const cst_msg_okletstry="Je me renseigne";
 const cst_msg_busy="Je mets en occupé votre compte skaillpe";
 const cst_msg_disconnect="Je déconnecte votre compte skaillpe";
 const cst_msg_selectfriend="Je mets à jour votre liste d'amis";
 const cst_msg_connectaccount="Je connecte le compte skaillpe";
 const cst_msg_badconfiguration="Veuillez configurer correctement les paramètres du pleugue ine";
 const cst_msg_fullscreen="Très bien je mets skaillpe en plein écran";
+const cst_msg_unknownaccount="Je ne connais pas le compte spécifié";
+const cst_msg_missedcall="Appel reçu de";
+const cst_msg_missedcall2="le";
+const cst_msg_nomissedcall="Aucun appel manqué";
+const cst_msg_missedcallintro="Voici la liste des appels manqués.";
+const cst_msg_missedcallintro2="Oui on a essayé de vous joindre";
 const cst_maxtimeout=20*1000;
-// Global variable
-var	g_timeout=0;
-var g_lastcall="";
-var g_script_skype_path="";
+const cst_minperiod_sameid=5*60*1000;
+const cst_month=["janvier","février","mars","avril","mai","juin","juillet","aout","septembre","octobre","novembre","décembre"];
 
+// Global variable
+var g_script_skype_path="";
+var	g_timeout=0;
+var g_lastisconnected="";
 var g_status="";
 var g_account="";
+var g_call=new Array();
+var g_missedcall=new Array();
 
 exports.init = function (SARAH)
 {
-    var cfg=SARAH.ConfigManager.getConfig();
+	var cfg=SARAH.ConfigManager.getConfig();
 	cfg = cfg.modules.skype;
-    g_script_skype_path=__dirname + "\\" + cst_skypevbs;
-    SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path});
-	var parameter="updateparameter \"" + __dirname + "\" \"" +cfg.Name1+"\" \""+cfg.User1+"\" \""+cfg.Pass1+"\" \""+cfg.Name2+"\" \""+cfg.User2+"\" \""+cfg.Pass2+"\" \""+cfg.Name3+"\" \""+cfg.User3+"\" \""+cfg.Pass3+"\"";
+	g_script_skype_path=__dirname + "\\" + cst_skypevbs;
+	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path});
+	var parameter="updateparameter \"" + __dirname + "\" \"" +cfg.Name1+"\" \""+cfg.Name2+"\" \""+cfg.Name3+"\"";
 	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path + " " + parameter});
 }
 
 exports.release = function (SARAH)
 {
-    SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path + " " + "cleanwscript"});
+	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path + " " + "cleanwscript"});
 }
 
 exports.action = function(data, callback, config, SARAH)
 {
-    if (data.mode=="call" || data.mode=="callvideo" || data.mode=="isconnected" || data.mode=="calllast" || data.mode=="calllastvideo")
-    {
+	if (data.mode=="call" || data.mode=="callvideo" || data.mode=="isconnected" || data.mode=="calllast" || data.mode=="calllastvideo")
+	{
 	   if (data.mode=="calllast" || data.mode=="calllastvideo")
 	   {
-		 if (Date()<g_timeout)
-	     {
-	      data.name=g_lastcall;
+		 if (new Date().getTime()<g_timeout)
+		 {
+		  data.name=g_lastisconnected;
 		  data.mode="call";
-	     }
+		 }
 		 else
 		 {
 		   data.mode="";
 		   SARAH.speak(cst_msg_unknowlast);
 		 }
-       }		 
-       if (data.mode=="callvideo)") SARAH.speak(cst_msg_callingvideo1 + " " + data.name + " " + cst_msg_callingvideo2);
+	   }		 
+	   if (data.mode=="callvideo)") SARAH.speak(cst_msg_callingvideo1 + " " + data.name + " " + cst_msg_callingvideo2);
 	   if (data.mode=="call") SARAH.speak(cst_msg_calling + " " + data.name);
-       if (data.mode=="isconnected")
+	   if (data.mode=="isconnected")
 	   {
-	     SARAH.speak(cst_msg_isconnected_b + " " + data.name + " " + cst_msg_isconnected_e);
-	     g_timeout=new Date();
-		 g_timeout+=cst_maxtimeout;
-	     g_lastcall=data.name;
+		 SARAH.speak(cst_msg_isconnected_b + " " + data.name + " " + cst_msg_isconnected_e);
+		 g_timeout=new Date().getTime()+cst_maxtimeout;
+		 g_lastisconnected=data.name;
 	   }
 	   else
-	     timer=0;
+		 timer=0;
 	  if (data.mode!="")
-        SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " \"" + data.name + "\""});
-    }
-    else if (data.mode=="connectaccount")
+		SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " \"" + data.name + "\""});
+	}
+	else if (data.mode=="connectaccount")
 	{
 	  var cfg=SARAH.ConfigManager.getConfig();
 	  cfg = cfg.modules.skype;
 	  if (cfg.Skype_path!="" && data.name!="") 
 	  {
-	    SARAH.speak(cst_msg_connectaccount + " " + "\"" + data.name + "\"");
-	    exe = cfg.Skype_path + "\\" + "Skype.exe";
-        SARAH.remote({ 'run' : exe, 'runp' : "/shutdown"});
-		setTimeout(function(){SARAH.remote({ 'run' : exe, 'runp' : "\"/username:" + data.login + "\" \"" + "/password:" + data.password + "\""});
-		                      setTimeout(function(){SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " selectfriendsilent " + __dirname + " " + "\"" + cfg.Skype_list + "\""});
-							                       },10000);
+		SARAH.speak(cst_msg_connectaccount + " " + "\"" + data.name + "\"");
+		exe = cfg.Skype_path + "\\" + "Skype.exe";
+		SARAH.remote({ 'run' : exe, 'runp' : "/shutdown"});
+		var login="";
+		var pass="";
+		switch (data.account)
+		{
+		   case "1":
+			 login=config.User1;
+			 password=config.Pass1;
+			 break;
+		   case "2":
+			 login=config.User2;
+			 password=config.Pass2;
+			 break;
+		   case "3":
+			 login=config.User3;
+			 password=config.Pass3;
+			 break;
+			default:
+			  console.log("Unknown account #"+data.account);
+			  break;
+		}
+		if (login!="" && password!="")
+			setTimeout(function(){SARAH.remote({ 'run' : exe, 'runp' : "\"/username:" + login + "\" \"" + "/password:" + password + "\""});
+							  setTimeout(function(){SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " selectfriendsilent " + __dirname + " " + "\"" + cfg.Skype_list + "\""});
+												   },10000);
 							 },2000);
-     }
+		else
+		  SARAH.speak(cst_msg_unknownaccount);
+	 }
 	  else
-	    SARAH.speak(cst_msg_badconfiguration);
+		SARAH.speak(cst_msg_badconfiguration);
 	}
 	else if (data.mode=="status")
 	{
-	   if (data.account!="") g_account=data.account;
-	   if (data.status!="") g_status=data.status;
-	   if (data.lastcall!="") g_lastcall=data.lastcall;
-console.log("status !!!! account="+g_account+" status="+g_status+" lastcall="+g_lastcall);
+	   if (typeof data.account!='undefined' && data.account!="") g_account=data.account;
+	   if (typeof data.status!='undefined' && data.status!="") g_status=data.status;
+	   if (typeof data.lastcall!='undefined' && data.lastcall!="")
+	   {
+		 var skip=0;
+
+		 SARAH.play(__dirname+"\\sonnerie.mp3");
+		 // If it's the same contact than the last one on short period then ignore it
+		 if (g_call.length>0 && g_call[g_call.length-1].id==data.lastcall && new Date.getTime()<(g_call[g_call.length-1].date.getTime()+cst_minperiod_sameid))
+			 skip=1;
+		 if (skip==0)
+		 {
+			ref=new Date();
+			g_call.push({id:data.lastcall, date:ref});
+			// Current call may be missed, flag it as missed for the moment
+			g_missedcall.push({id:data.lastcall, date:ref});
+		 }
+	   }
+	}
+	else if (data.mode=="lastmissedcalls")
+	{
+	  if (g_missedcall.length>0)
+	  {
+		SARAH.speak(cst_msg_missedcallintro);
+		for (i=0;i<g_missedcall.length;i++)
+		  SARAH.speak(cst_msg_missedcall + " " + g_missedcall[i].id + " " + cst_msg_missedcall2 + " " + formatDate(g_missedcall[g_call.length-1].date,1));
+	  }
+	  else
+		SARAH.speak(cst_msg_nomissedcall);
 	}
 	else if (data.mode=="test")
 	{
-      SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " " + __dirname});
+	  SARAH.speak(cst_msg_okletstry);
+	  SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " " + __dirname});
 	}
 	else
-    {
+	{
 	  var cfg=SARAH.ConfigManager.getConfig();
 	  var text="";
 	  cfg = cfg.modules.skype;
 	  optionnal="";
 	  if (data.mode=="selectfriend")
 	  { 
-	    text=cst_msg_selectfriend;
+		text=cst_msg_selectfriend;
 		optionnal=" \"" + cfg.Skype_list + "\"";
-      }
+	  }
 	  if (data.mode=="getstatus") text=cst_msg_getstatus;
 	  if (data.mode=="connect") text=cst_msg_connect;
 	  if (data.mode=="busy") text=cst_msg_busy;
 	  if (data.mode=="disconnect") text=cst_msg_disconnect;
-      if (data.mode=="listconnected") text=cst_msg_whoisconnected;
-      if (data.mode=="finish") text=cst_msg_finishcall;
-      if (data.mode=="fullscreen") text=cst_msg_fullscreen;
+	  if (data.mode=="listconnected") text=cst_msg_whoisconnected;
+	  if (data.mode=="finish") text=cst_msg_finishcall;
+	  if (data.mode=="fullscreen") text=cst_msg_fullscreen;
+	  if (data.mode=="answer")
+		 // forget about the current call, this is not a missed one...	
+		 g_missedcall.pop();
 	  if (!data.mode) 
 	  {
 		  if (text!="") SARAH.speak(text);
 		  SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " " + __dirname + optionnal});
 	  }
-    }
+	}
 	callback();
+}
+
+var formatDate=function(d, tovocalize)
+{
+  str="";
+  if (tovocalize==0)
+	str=d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear()+" "+d.getHours()+":"+d.getMinutes();
+  else
+	str=d.getDate()+" "+cst_month[d.getMonth()]+" "+d.getFullYear()+" à "+d.getHours()+" heures "+d.getMinutes()+" minutes";
+  return str;
 }
 
 exports.getBasic = function(SARAH)
@@ -142,6 +214,17 @@ exports.getBasic = function(SARAH)
   info={};
   info.account=g_account;
   info.status=g_status;
-  info.lastcall=g_lastcall;
+  info.lastmissedcall={};
+  if (g_call.length>0)
+	info.lastcall=g_call[g_call.length-1];
+  else
+	info.lastcall={id:"",date:""};
+  if (g_missedcall.length>0)
+  {
+	info.lastmissedcall.id=g_missedcall[g_call.length-1].id;
+	info.lastmissedcall.date=formatDate(g_missedcall[g_call.length-1].date,0);
+  }
+  else
+	info.lastmissedcall={id:"",date:""};
   return info;
 }

@@ -19,11 +19,13 @@
 
 .plugin-gridster.skype .text {
   background: #FFFFFF;
-  right: 0; width: 65%; 
+  right: 0; 
+  width: 65%; 
   text-align: left;
 }
 .plugin-gridster.skype .text .title {
-  font-size: 22px; line-height: 22px;
+  font-size: 22px; 
+  line-height: 22px;
   font-weight: bold;
 }
 .plugin-gridster.skype .text .author {
@@ -31,9 +33,10 @@
   text-align: right;
   width: 90%
 }
-
 .plugin-gridster.skype .text .status {
-  font-size: 12px; 
+  font-size: 11px; 
+  line-height: 11px;
+  font-weight: bold;
 }
 .plugin-gridster.skype .text .status img {
   vertical-align: baseline;

@@ -34,6 +34,9 @@
       <item>Oui, appelle la<tag>out.action.mode="calllast";</tag></item>
       <item>Oui, appelle le avec la vidéo<tag>out.action.mode="calllastvideo";</tag></item>
       <item>Oui, appelle la avec la vidéo<tag>out.action.mode="calllastvideo";</tag></item>
+	  <item>Est ce que quelqu'un à essayer de me joindre<tag>out.action.mode="lastmissedcalls";</tag></item>
+	  <item>Est ce que quelqu'un m'a appelé<tag>out.action.mode="lastmissedcalls";</tag></item>
+	  <item>Quels sont les derniers appels manqués<tag>out.action.mode="lastmissedcalls";</tag></item>
     </one-of>
     <item repeat="0-1">
       <one-of>
@@ -59,7 +62,7 @@
       <item>Peux tu appeller</item>
     </one-of>
 	<!-- Automatic Generation §1 -->
-	<!-- �1 Automatic Generation -->
+	<!-- �1 Automatic Generation -->
     <item repeat="0-1">
       <one-of>
          <item>en vidéo<tag>out.action.mode+="video";</tag></item>
@@ -92,7 +95,7 @@
 	  </one-of>
     </item>
 	<!-- Automatic Generation §2 -->
-	<!-- �2 Automatic Generation -->
+	<!-- �2 Automatic Generation -->
     <one-of>
       <item>est connecté</item>
       <item>est il connecté</item>

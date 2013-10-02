@@ -5,13 +5,13 @@
 %>
 
 <div class="logo">
-  <a href="sarah/<%=key%>?mode=test" class="ajax"><img src="/assets/<%=key%>/images/skype.png"></a>
+  <a href="sarah/<%=key%>?mode=test" class="ajax"><img src="/assets/<%=key%>/images/skype.png" title="Test skype"></a>
 </div>
 
 <div class="text">
   <br/><span class="title">Skype</span>
   <div class="author">by AVN</div>
-  <span class="status">Compte:<%=info.account%></span>
-  <br/><span class="status">Etat:<%=info.status%></span>
-  <br/><span class="status">Der. appel entrant:<%=info.lastcall%></span>
+  <span class="status">Compte: <%=info.account%></span>
+  <br/><span class="status">Etat: <%=info.status%></span>
+  <br/><span class="status">Der. app:<br>&nbsp;&nbsp;&nbsp;<%=info.lastmissedcall.id%>&nbsp;&nbsp;<%=info.lastmissedcall.date%></span>
 </div>

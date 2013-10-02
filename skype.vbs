@@ -60,7 +60,6 @@ dim cUserStatus_Busy
 dim CR
 dim g_status
 dim g_account
-dim g_lastcall
 
 on error resume next
 
@@ -155,10 +154,9 @@ Sub init_Skype()
   cUserStatus_Offline = oSkype.Convert.TextToUserStatus("OFFLINE")
   cUserStatus_Busy = 4
   CR=Chr(13) + Chr(10)
-  g_account=oSkype.CurrentUser.FullName
+  g_account=oSkype.CurrentUser.Handle
   g_status=Skype_GetStatusSimple()
-  g_lastcall=""
-  send_http_request(sarah_jsurl+"?mode=status&account="+g_account+"&status="+g_status+"&lastcall="+g_lastcall)
+  send_http_request(sarah_jsurl+"?mode=status&account="+g_account+"&status="+g_status)
   ' Check that user is connected
 '  If oSkype.CurrentUserStatus <> cUserStatus_Online Then
 '	send_http_request(sarah_tts_url + sarah_tts_usernotconnected)
@@ -189,8 +187,8 @@ Sub Skype_UpdateConfigParameter(Byval Args)
   count=0
   config="	<one-of>"
   For i = 0 To 2
-    If (Args(2+i*3)<>"" And Args(2+i*3)<>"undefined") Then
-      config = config + CR + "		<item>" + Args(2+i*3) + "<tag>out.action.name=""" + Args(2+i*3) + """;out.action.login=""" + Args(2+i*3+1) + """;out.action.password=""" + Args(2+i*3+2) + """</tag></item>"
+    If (Args(2+i)<>"" And Args(2+i)<>"undefined") Then
+      config = config + CR + "		<item>" & Args(2+i) & "<tag>out.action.account=""" & (i+1) & """;</tag></item>"
 	  count=count+1
     End If
   Next
@@ -200,24 +198,26 @@ Sub Skype_UpdateConfigParameter(Byval Args)
     finalstring=ReplacePattern(content, "§3[^§]*§3", replaceString)
     WriteFile FileName, finalstring
   End If
+  content=""
 End Sub
 
 ' Skype Call Detection
 Public Sub oSkype_CallStatus(ByVal pCall , ByVal Status )
-       If Status = clsRinging Then
-         If Timer() > (StartTime + 10) Then
-           StartTime = Timer()
-           If pCall.Type = cltIncomingP2P Or pCall.Type = cltIncomingPSTN Then
-             For i=1 to callin_repeattimes
-	     	   If oSkype.ActiveCalls.Count>0 Then
-		         send_http_request(sarah_tts_url + sarah_tts_incomingcall + pCall.PartnerHandle)
-  			     send_http_request(sarah_jsurl+"?mode=status&account=&status=&lastcall="+g_lastcall)
-     	         Wscript.Sleep(callin_freqtimer)
-		       End If
-             Next
-           End If
-         End If
-       End If
+   If Status = clsRinging Then
+	 ref = DateDiff("S", "1/1/1970", Now())
+	 If ref > (StartTime + 10) Then
+	   StartTime = ref
+	   If pCall.Type = cltIncomingP2P Or pCall.Type = cltIncomingPSTN Then
+		 For i=1 to callin_repeattimes
+		   If oSkype.ActiveCalls.Count>0 Then
+			 send_http_request(sarah_jsurl+"?mode=status&lastcall="+pCall.PartnerHandle)
+			 send_http_request(sarah_tts_url + sarah_tts_incomingcall + pCall.PartnerHandle)
+			 Wscript.Sleep(callin_freqtimer)
+		   End If
+		 Next
+	   End If
+	 End If
+   End If
 End Sub
 
 Sub Skype_Connect()

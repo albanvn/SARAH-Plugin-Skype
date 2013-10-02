@@ -10,27 +10,32 @@ Changelog.txt
 
 TODO:  
   -Add call to selectfriend on startup even when skype is not connnected
-  -Convert Unicode from Handle SKYPE to ascii
+  -Convert Unicode from SKYPE Handle variable to ascii
   -Minimize skype after connexion on account done
-  -message to tell that skype is connected when new account connexion
+  -Message to tell that skype is connected when new account connexion
 
 
-V1.1 - XX/XX/20XX
+V1.2 - XX/XX/XXXX
+
+
+V1.1 - 02/10/2013
+  -Add missed call features
+  -Login and password are no more in xml file
   -Blank list in friend list is now supported
   -Add ChangeLog.txt
   -Correct bug on selectfriend request (favorites list name was missing)
   -Correct bug on skype busy mode
-  -Now list of friend can be empty
-  -On error resume next added in vbs
-  -Review doc
-  -Do some cosmetic change
-  -Add portlet
+  -Now list of friend can be empty in xml
+  -On error resume next added in vbs to avoid message box
+  -Review doc index.html
+  -Do some cosmetic change in source code
+  -Add portlet features
   -Add infos on portlet (account, status, last incoming call)
   -Add default action on skype icon in portlet
-  -Add Licence.txt
-  -Use SARAH.speak instead of callback & tts option
+  -Add Licence.txt file
+  -Use SARAH.speak instead of callback & tts option in js
   -Correct bug on gs_lastcall feature
-  -Add test mode for portlet
+  -Add test mode for icon skype in portlet
 
 V1.0 - 28/08/2013
   Initial release
