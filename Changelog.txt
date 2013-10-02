@@ -5,39 +5,44 @@
 * Email:alban@albanvn.net                  *
 ********************************************
 
-Changelog.txt
--------------
+*****************
+* Changelog.txt *
+*****************
 
 TODO:  
+-----
   -Add call to selectfriend on startup even when skype is not connnected
   -Convert Unicode from SKYPE Handle variable to ascii
   -Minimize skype after connexion on account done
-  -Message to tell that skype is connected when new account connexion
-
-
-V1.2 - XX/XX/XXXX
+  -Message to tell that skype is connected after account connexion
 
 
 V1.1 - 02/10/2013
-  -Add missed call features
-  -Login and password are no more in xml file
-  -Blank list in friend list is now supported
-  -Add ChangeLog.txt
-  -Correct bug on selectfriend request (favorites list name was missing)
-  -Correct bug on skype busy mode
-  -Now list of friend can be empty in xml
-  -On error resume next added in vbs to avoid message box
+-----------------
+  New features:
+  -Add sonnerie.mp3 file and now play it on incoming call
+  -Add 'missed call' list features and related action in skype.xml file
+  -Login and password are now only in prop file, no more in xml file
+  -Add ChangeLog.txt file
+  -Add Licence.txt file
   -Review doc index.html
+  -Review skype.xml file and sentences
+  -Now friend list can be blank in skype.xml file
+  -On error resume next added in vbs to avoid vbs message box on specific error
   -Do some cosmetic change in source code
   -Add portlet features
-  -Add infos on portlet (account, status, last incoming call)
-  -Add default action on skype icon in portlet
-  -Add Licence.txt file
-  -Use SARAH.speak instead of callback & tts option in js
-  -Correct bug on gs_lastcall feature
-  -Add test mode for icon skype in portlet
+  -Add gadget and plugin informations on portlet (help button, login account, account status, last missed incoming call, ...)
+  -Add default action on skype icon in portlet (skype test link)
+  -Use SARAH.speak instead of callback() with tts option in skype.js
+
+  Bugs:
+  -Correct bug on gs_lastcall variable in skype.js (call a connected contact feature didn't seem to work in previous version)
+  -Correct bug on selectfriend request (favorites list name was missing in arg in function call in previous version)
+  -Correct bug on skype busy mode (impossible to switch to 'busy' mode in previous version)
+  -Correct bug on answer mode (didn't seem to work in previous version)
 
 V1.0 - 28/08/2013
+-----------------
   Initial release
   
 
