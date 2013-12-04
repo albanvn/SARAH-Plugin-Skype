@@ -12,9 +12,9 @@
 TODO:  
 -----
   -Add call to selectfriend capability on startup even when skype is not connnected
-  -Convert Unicode from SKYPE Handle variable to ascii
-  -Minimize skype after connexion on account done
-  -Message to tell that skype is connected after account connexion
+  -Convert Unicode from SKYPE Handle variable to ASCII
+  -Minimize skype after account connexion
+  -Message from SARAH to tell that skype is connected after account connexion
 
 
 V1.1 - 02/10/2013
