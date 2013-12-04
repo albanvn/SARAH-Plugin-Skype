@@ -52,9 +52,9 @@ exports.init = function (SARAH)
 	var cfg=SARAH.ConfigManager.getConfig();
 	cfg = cfg.modules.skype;
 	g_script_skype_path=__dirname + "\\" + cst_skypevbs;
-	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path});
+	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path });
 	var parameter="updateparameter \"" + __dirname + "\" \"" +cfg.Name1+"\" \""+cfg.Name2+"\" \""+cfg.Name3+"\"";
-	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path + " " + parameter});
+	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path + " " + parameter });
 }
 
 exports.release = function (SARAH)

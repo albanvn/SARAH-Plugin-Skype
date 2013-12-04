@@ -11,7 +11,7 @@
 
 TODO:  
 -----
-  -Add call to selectfriend on startup even when skype is not connnected
+  -Add call to selectfriend capability on startup even when skype is not connnected
   -Convert Unicode from SKYPE Handle variable to ascii
   -Minimize skype after connexion on account done
   -Message to tell that skype is connected after account connexion
@@ -28,9 +28,9 @@ V1.1 - 02/10/2013
   -Review doc index.html
   -Review skype.xml file and sentences
   -Now friend list can be blank in skype.xml file
-  -On error resume next added in vbs to avoid vbs message box on specific error
-  -Do some cosmetic change in source code
-  -Add portlet features
+  -On error resume next added in VBS to avoid VBS message box on specific error
+  -Do some cosmetic change in skype.js source code
+  -Add portlet feature
   -Add gadget and plugin informations on portlet (help button, login account, account status, last missed incoming call, ...)
   -Add default action on skype icon in portlet (skype test link)
   -Use SARAH.speak instead of callback() with tts option in skype.js
@@ -39,7 +39,7 @@ V1.1 - 02/10/2013
   -Correct bug on gs_lastcall variable in skype.js (call a connected contact feature didn't seem to work in previous version)
   -Correct bug on selectfriend request (favorites list name was missing in arg in function call in previous version)
   -Correct bug on skype busy mode (impossible to switch to 'busy' mode in previous version)
-  -Correct bug on answer mode (didn't seem to work in previous version)
+  -Correct bug on answer mode (doesn't seem to work in previous version)
 
 V1.0 - 28/08/2013
 -----------------

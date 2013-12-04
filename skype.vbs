@@ -20,6 +20,8 @@ const clsRinging = 4
 const cltIncomingP2P = 2
 const cltIncomingPSTN = 0
 const sarah_tts_url="http://localhost:8080/sarah/parle?phrase="
+const sarah_jsurl="http://127.0.0.1:8080/sarah/skype"
+
 const sarah_tts_incomingcall="Appelle Skaillpe, de "
 const sarah_tts_nocall="Il n'y a pas d'appel disponible"
 const sarah_tts_call="Très bien j'appelle "
@@ -41,10 +43,10 @@ const sarah_tts_skypeaccount="Connecté au compte skaillpe de "
 const sarah_tts_skypenotrunning="Skaillpe n'est pas actuellement lancé"
 const sarah_tts_accountnotconnected="Aucun compte connecté actuellement à Skaillpe"
 const sarah_tts_thestatusis=". Le statut est: "
-const sarah_jsurl="http://127.0.0.1:8080/sarah/skype"
 
 const callin_freqtimer=8000
 const callin_repeattimes=3
+const debugapp=0
 
 dim oSkype
 dim xmlHttp
@@ -60,71 +62,91 @@ dim cUserStatus_Busy
 dim CR
 dim g_status
 dim g_account
+dim g_directory
 
-on error resume next
+If g_debug=0 Then
+  on error resume next
+End If
+
+Sub Debug(Byval level, Byval str)
+  If debugapp And level Then
+    Dim oFso, f
+    Set oFso = WScript.CreateObject("Scripting.FileSystemObject")
+    Set f = oFso.OpenTextFile(g_directory+"\\debuglog.txt", 8, True)
+	f.Write str & vbCrLf
+	f.Close
+  End If
+End Sub
 
 ' main()
 Set args  = Wscript.Arguments
-  if args.count=0 Then
-  ' If no argument then start in daemon mode
-  StartTime=0
-  If CountProcess("wscript.exe", "skype.vbs", "updateparameter") = 1 Then
-    init_Skype 
-    Do While True  
-      WScript.Sleep(60000) 
-    Loop
-  End If
+Set fso = WScript.CreateObject("Scripting.FileSystemObject")
+Set objFile = fso.GetFile(WScript.ScriptFullName)
+g_directory = Left(objFile.Path, Len(objFile.Path)-Len(objFile.Name))
+If args.count=0 Then
+	' If no argument then start in daemon mode
+	StartTime=0
+	If CountProcess("wscript.exe", "skype.vbs", "updateparameter") = 1 Then
+	  Debug 1,"Running skype.vbs in foreground"
+	  init_Skype 
+	  Do While True  
+		WScript.Sleep(60000) 
+	  Loop
+	Else
+	  Debug 1, "Skype.vbs already running in foreground"
+	End If
 Else
-  'debug purpose
-  'send_http_request(sarah_tts_url + args(0))
-  init_Skype
-  Select case args(0)
-    case "updateparameter"
-	    Skype_UpdateConfigParameter(args)
-    case "answer"
-		Skype_Answer()
-    case "call"
-		Skype_Call(args(1))
-    case "callvideo"
-		Skype_CallVideo(args(1))
-    case "finish"
-		Skype_Finish()
-    case "videoon"
-		Skype_RunVideo()
-    case "videooff"
-		Skype_StopVideo()
-    case "selectfriendsilent"
-		Skype_WaitConnexion		
-		Skype_SelectFriend args, true
-    case "selectfriend"
-		Skype_SelectFriend args, false
-    case "fullscreen"
-		Skype_FullScreen()
-    case "cleanwscript"
-		Skype_Clean()
-    case "isconnected"
-		Skype_IsConnected(args(1))
-    case "listconnected"
-		Skype_ListConnected()
-	case "screenon"
-	    Skype_ScreenOn()
-	case "getstatus"
-	    Skype_GetStatus()
-	case "connect"
-	    Skype_Connect()
-	case "disconnect"
-	    Skype_Disconnect()
-	case "busy"
-	    Skype_Busy()
-	case "minimize"
-		Skype_Minimize()
-	case "test"
-	    Skype_Test()
-	case "undefined"
-	    DoNothing()
-	case else
-	    send_http_request(sarah_tts_url + sarah_tts_unknownparameter + " " + args(0))
-  End Select 
+	'debug purpose
+	'send_http_request(sarah_tts_url + args(0))
+	init_Skype
+	Debug 1, "Dispatching msg arg0:" + args(0)
+	Select case args(0)
+		case "updateparameter"
+			Skype_UpdateConfigParameter(args)
+		case "answer"
+			Skype_Answer()
+		case "call"
+			Skype_Call(args(1))
+		case "callvideo"
+			Skype_CallVideo(args(1))
+		case "finish"
+			Skype_Finish()
+		case "videoon"
+			Skype_RunVideo()
+		case "videooff"
+			Skype_StopVideo()
+		case "selectfriendsilent"
+			Skype_WaitConnexion		
+			Skype_SelectFriend args, true
+		case "selectfriend"
+			Skype_SelectFriend args, false
+		case "fullscreen"
+			Skype_FullScreen()
+		case "cleanwscript"
+			Skype_Clean()
+		case "isconnected"
+			Skype_IsConnected(args(1))
+		case "listconnected"
+			Skype_ListConnected()
+		case "screenon"
+			Skype_ScreenOn()
+		case "getstatus"
+			Skype_GetStatus()
+		case "connect"
+			Skype_Connect()
+		case "disconnect"
+			Skype_Disconnect()
+		case "busy"
+			Skype_Busy()
+		case "minimize"
+			Skype_Minimize()
+		case "test"
+			Skype_Test()
+		case "undefined"
+			DoNothing()
+		case else
+			send_http_request(sarah_tts_url + sarah_tts_unknownparameter + " " + args(0))
+	End Select 
 End If
 
 Sub Skype_WaitConnexion()
