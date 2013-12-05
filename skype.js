@@ -103,7 +103,7 @@ exports.action = function(data, callback, config, SARAH)
 		exe = cfg.Skype_path + "\\" + "Skype.exe";
 		SARAH.remote({ 'run' : exe, 'runp' : "/shutdown"});
 		var login="";
-		var pass="";
+		var password="";
 		var name="";
 		switch (data.account)
 		{
@@ -198,9 +198,10 @@ exports.action = function(data, callback, config, SARAH)
 	  if (data.mode=="answer")
 		 // forget about the current call, this is not a missed one...	
 		 g_missedcall.pop();
-	  if (!data.mode) 
+	  if (data.mode!="") 
 	  {
-		  if (text!="") bf.speak(text, SARAH);
+		  if (text!="") 
+			bf.speak(text, SARAH);
 		  SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " " + __dirname + optionnal});
 	  }
 	}
