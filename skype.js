@@ -98,36 +98,42 @@ exports.action = function(data, callback, config, SARAH)
 	{
 	  var cfg=SARAH.ConfigManager.getConfig();
 	  cfg = cfg.modules.skype;
-	  if (cfg.Skype_path!="" && data.name!="") 
+	  if (cfg.Skype_path!="") 
 	  {
-		bf.speak(cst_msg_connectaccount + " " + "\"" + data.name + "\"", SARAH);
 		exe = cfg.Skype_path + "\\" + "Skype.exe";
 		SARAH.remote({ 'run' : exe, 'runp' : "/shutdown"});
 		var login="";
 		var pass="";
+		var name="";
 		switch (data.account)
 		{
-		   case "1":
-			 login=config.User1;
-			 password=config.Pass1;
-			 break;
-		   case "2":
-			 login=config.User2;
-			 password=config.Pass2;
-			 break;
-		   case "3":
-			 login=config.User3;
-			 password=config.Pass3;
-			 break;
+			case "1":
+				login=cfg.User1;
+				password=cfg.Pass1;
+				name=cfg.Name1;
+				break;
+			case "2":
+				login=cfg.User2;
+				password=cfg.Pass2;
+				name=cfg.Name2;
+				break;
+			case "3":
+				login=cfg.User3;
+				password=cfg.Pass3;
+				name=cfg.Name3;
+				break;
 			default:
-			  console.log("Unknown account #"+data.account);
-			  break;
+				console.log("Unknown account #"+data.account);
+				break;
 		}
-		if (login!="" && password!="")
+		if (login!="" && password!="" && name!="")
+		{
+			bf.speak(cst_msg_connectaccount + " " + "\"" + name + "\"", SARAH);
 			setTimeout(function(){SARAH.remote({ 'run' : exe, 'runp' : "\"/username:" + login + "\" \"" + "/password:" + password + "\""});
 							  setTimeout(function(){SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " selectfriendsilent " + __dirname + " " + "\"" + cfg.Skype_list + "\""});
 												   },10000);
 							 },2000);
+		}
 		else
 		  bf.speak(cst_msg_unknownaccount, SARAH);
 	 }
@@ -200,6 +206,7 @@ exports.action = function(data, callback, config, SARAH)
 	}
 	callback();
 }
+
 
 var formatDate=function(d, tovocalize)
 {
