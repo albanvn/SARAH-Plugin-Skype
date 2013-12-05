@@ -40,7 +40,8 @@ V1.1 - 02/10/2013
   -Correct bug on selectfriend request (favorites list name was missing in arg in function call in previous version)
   -Correct bug on skype busy mode (impossible to switch to 'busy' mode in previous version)
   -Correct bug on answer mode (doesn't seem to work in previous version)
-
+  -Correct bug on account connexion 
+  
 V1.0 - 28/08/2013
 -----------------
   Initial release
