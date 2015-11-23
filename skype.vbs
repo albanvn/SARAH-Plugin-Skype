@@ -36,6 +36,8 @@ const sarah_tts_changestatus="Votre statut est maintenant: "
 const sarah_tts_getstatus="Votre statut est actuellement: "
 const sarah_tts_connected="en ligne"
 const sarah_tts_disconnected="hors ligne"
+const sarah_tts_away="absent"
+const sarah_tts_invisible="invisible"
 const sarah_tts_busy="occupé"
 const sarah_tts_unknownparameter="Je ne reconnais pas le paramètre"
 const sarah_tts_notfoundgroup="Je ne trouve pas le groupe"
@@ -44,10 +46,12 @@ const sarah_tts_skypenotrunning="Skaillpe n'est pas actuellement lancé"
 const sarah_tts_accountnotconnected="Aucun compte connecté actuellement à Skaillpe"
 const sarah_tts_thestatusis=". Le statut est: "
 
-const callin_freqtimer=8000
-const callin_repeattimes=3
-const debugapp=0
+const CALLIN_FREQTIMER=8000
+const CALLIN_REPEATTIMES=3
+const g_debug=0
 
+dim debugapp
+dim aliveFreq
 dim oSkype
 dim xmlHttp
 dim args
@@ -58,17 +62,20 @@ dim config
 dim config_xml
 dim cUserStatus_Online 
 dim cUserStatus_Offline 
+dim cUserStatus_Away 
+dim cUserStatus_Invisible 
 dim cUserStatus_Busy
 dim CR
 dim g_status
 dim g_account
 dim g_directory
 
+
 If g_debug=0 Then
   on error resume next
 End If
 
-Sub Debug(Byval level, Byval str)
+Sub Debug_Old(Byval level, Byval str)
   If debugapp And level Then
     Dim oFso, f
     Set oFso = WScript.CreateObject("Scripting.FileSystemObject")
@@ -78,76 +85,105 @@ Sub Debug(Byval level, Byval str)
   End If
 End Sub
 
+Sub Debug(Byval level, Byval str)
+  If debugapp And level Then
+    send_http_request_debug(sarah_jsurl+"?mode=debug&comment="+str)
+  End If
+End Sub
+
 ' main()
 Set args  = Wscript.Arguments
 Set fso = WScript.CreateObject("Scripting.FileSystemObject")
 Set objFile = fso.GetFile(WScript.ScriptFullName)
 g_directory = Left(objFile.Path, Len(objFile.Path)-Len(objFile.Name))
-If args.count=0 Then
+debugapp=0
+If args.Count=3 And args(1)="daemon" Then
 	' If no argument then start in daemon mode
 	StartTime=0
-	If CountProcess("wscript.exe", "skype.vbs", "updateparameter") = 1 Then
-	  Debug 1,"Running skype.vbs in foreground"
-	  init_Skype 
-	  Do While True  
-		WScript.Sleep(60000) 
+	debugapp=args(0)
+	aliveFreq=args(2)
+	dim quit
+	quit=0
+	If CountProcess("wscript.exe", "skype.vbs", "daemon") = 1 Then
+	  Debug 16,"Running skype.vbs in foreground"
+	  init_Skype
+      send_http_request(sarah_jsurl+"?mode=alive")
+	  Do While quit=0
+		WScript.Sleep(aliveFreq*1000) 
+   	    send_http_request(sarah_jsurl+"?mode=alive")
+		If CheckNodeJS() = 1 Then
+		  quit=1
+		End If
 	  Loop
+	  Debug 16, "Skype.vbs daemon is ending"
 	Else
-	  Debug 1, "Skype.vbs already running in foreground"
+	  Debug 16, "Skype.vbs already running in foreground"
 	End If
 Else
-	'debug purpose
-	'send_http_request(sarah_tts_url + args(0))
-	init_Skype
-	Debug 1, "Dispatching msg arg0:" + args(0)
-	Select case args(0)
-		case "updateparameter"
-			Skype_UpdateConfigParameter(args)
-		case "answer"
-			Skype_Answer()
-		case "call"
-			Skype_Call(args(1))
-		case "callvideo"
-			Skype_CallVideo(args(1))
-		case "finish"
-			Skype_Finish()
-		case "videoon"
-			Skype_RunVideo()
-		case "videooff"
-			Skype_StopVideo()
-		case "selectfriendsilent"
-			Skype_WaitConnexion		
-			Skype_SelectFriend args, true
-		case "selectfriend"
-			Skype_SelectFriend args, false
-		case "fullscreen"
-			Skype_FullScreen()
-		case "cleanwscript"
-			Skype_Clean()
-		case "isconnected"
-			Skype_IsConnected(args(1))
-		case "listconnected"
-			Skype_ListConnected()
-		case "screenon"
-			Skype_ScreenOn()
-		case "getstatus"
-			Skype_GetStatus()
-		case "connect"
-			Skype_Connect()
-		case "disconnect"
-			Skype_Disconnect()
-		case "busy"
-			Skype_Busy()
-		case "minimize"
-			Skype_Minimize()
-		case "test"
-			Skype_Test()
-		case "undefined"
-			DoNothing()
-		case else
-			send_http_request(sarah_tts_url + sarah_tts_unknownparameter + " " + args(0))
-	End Select 
+	If args.Count>1 Then
+		init_Skype
+		debugapp=args(0)
+		Debug 16, "Dispatching msg: mode=" + args(1) + " nbarg=" + CStr(args.Count-1)
+		For I = 2 to args.Count
+		  Debug 16, "arg "+CStr(I)+": '" + args(I)+"'"
+		Next
+		Select case args(1)
+			case "updateparameter"
+				Skype_UpdateConfigParameter(args)
+			case "answer"
+				Skype_Answer()
+			case "call"
+				Skype_Call(args(2))
+			case "callvideo"
+				Skype_CallVideo(args(2))
+			case "finish"
+				Skype_Finish()
+			case "videoon"
+				Skype_RunVideo()
+			case "videooff"
+				Skype_StopVideo()
+			case "selectfriendsilent"
+				Skype_WaitConnexion		
+				Skype_SelectFriend args, true
+			case "selectfriend"
+				Skype_SelectFriend args, false
+			case "fullscreen"
+				Skype_FullScreen()
+			case "cleanwscript"
+				Skype_Clean()
+			case "isconnected"
+				Skype_IsConnected(args(2))
+			case "listconnected"
+				Skype_ListConnected()
+			case "screenon"
+				Skype_ScreenOn()
+			case "getstatus"
+				Skype_GetStatus()
+			case "connect"
+				Skype_Connect()
+			case "disconnect"
+				Skype_Disconnect()
+			case "busy"
+				Skype_Busy()
+			case "minimize"
+				Skype_Minimize()
+			case "test"
+				Skype_Test()
+			case "undefined"
+				DoNothing()
+			case else
+				send_http_request(sarah_tts_url + sarah_tts_unknownparameter + " " + args(1))
+		End Select 
+	End If
 End If
+WScript.Quit 0
+
+Function CheckNodeJS()
+  CheckNodeJS=0
+  If CountProcess("node.exe", "script/", "wsrnode.js") = 0 Then
+	CheckNodeJS=1
+  End If
+End Function
 
 Sub Skype_WaitConnexion()
   While Not oSkype.Client.IsRunning
@@ -174,6 +210,8 @@ Sub init_Skype()
   oSkype.Attach
   cUserStatus_Online= oSkype.Convert.TextToUserStatus("ONLINE")
   cUserStatus_Offline = oSkype.Convert.TextToUserStatus("OFFLINE")
+  cUserStatus_Away = oSkype.Convert.TextToUserStatus("AWAY")
+  cUserStatus_Invisible = oSkype.Convert.TextToUserStatus("INVISIBLE")
   cUserStatus_Busy = 4
   CR=Chr(13) + Chr(10)
   g_account=oSkype.CurrentUser.Handle
@@ -204,13 +242,13 @@ Sub Skype_Test()
 End Sub
 
 Sub Skype_UpdateConfigParameter(Byval Args)
-  FileName=Args(1) + "\\" + "skype.xml"
+  FileName=Args(2) + "\\" + "skype.xml"
   content=ReadFile(FileName)
   count=0
   config="	<one-of>"
   For i = 0 To 2
-    If (Args(2+i)<>"" And Args(2+i)<>"undefined") Then
-      config = config + CR + "		<item>" & Args(2+i) & "<tag>out.action.account=""" & (i+1) & """;</tag></item>"
+    If (Args(3+i)<>"" And Args(3+i)<>"undefined") Then
+      config = config + CR + "		<item>" & Args(3+i) & "<tag>out.action.account=""" & (i+1) & """;</tag></item>"
 	  count=count+1
     End If
   Next
@@ -230,11 +268,11 @@ Public Sub oSkype_CallStatus(ByVal pCall , ByVal Status )
 	 If ref > (StartTime + 10) Then
 	   StartTime = ref
 	   If pCall.Type = cltIncomingP2P Or pCall.Type = cltIncomingPSTN Then
-		 For i=1 to callin_repeattimes
+		 For i=1 to CALLIN_REPEATTIMES
 		   If oSkype.ActiveCalls.Count>0 Then
 			 send_http_request(sarah_jsurl+"?mode=status&lastcall="+pCall.PartnerHandle)
 			 send_http_request(sarah_tts_url + sarah_tts_incomingcall + pCall.PartnerHandle)
-			 Wscript.Sleep(callin_freqtimer)
+			 Wscript.Sleep(CALLIN_FREQTIMER)
 		   End If
 		 Next
 	   End If
@@ -258,7 +296,7 @@ Sub Skype_Busy()
 End Sub
 
 Function Skype_GetStatusSimple()   
-  Skype_GetStatusSimple="" 
+  Skype_GetStatusSimple=""
   If oSkype.CurrentUserStatus = cUserStatus_Online Then
     Skype_GetStatusSimple=sarah_tts_connected
   End If
@@ -267,6 +305,12 @@ Function Skype_GetStatusSimple()
   End If
   If oSkype.CurrentUserStatus = cUserStatus_Busy Then
     Skype_GetStatusSimple=sarah_tts_busy
+  End If
+  If oSkype.CurrentUserStatus = cUserStatus_Away Then
+    Skype_GetStatusSimple=sarah_tts_away
+  End If
+  If oSkype.CurrentUserStatus = cUserStatus_Invisible Then
+    Skype_GetStatusSimple=sarah_tts_invisible
   End If
 End Function
 
@@ -313,7 +357,7 @@ Function CountProcess(ByVal CaptionTitle, ByVal CommandLine, ByVal NotInCommandL
   Set colItems = objWMIService.ExecQuery("Select * from Win32_Process where caption='" + CaptionTitle + "'",,48)
   For Each objItem in colItems
 	If InStr(objItem.CommandLine, CommandLine) Then
-	   If InStr(objItem.CommandLine, NotInCommandLine)=0 Then
+	   If InStr(objItem.CommandLine, NotInCommandLine) Then
 	     count=count+1
 	   End If
 	End If
@@ -379,8 +423,8 @@ End Function
 
 Sub Skype_SelectFriend(ByVal Args, Byval Silent)
   Dim i, config_xml
-  Directory=Args(1)
-  GroupName=Args(2)
+  Directory=Args(2)
+  GroupName=Args(3)
   found=0
   i=1
   config_xml="	<one-of>"
@@ -486,6 +530,17 @@ End Sub
 
 ' Send http request
 Sub send_http_request(ByVal url)
+  Set xmlHttp = WScript.CreateObject("MSXML2.ServerXMLHTTP")
+  Debug 32, "URL: "+url
+  xmlHttp.Open "GET", url, False
+  xmlHttp.Send ""
+  getHTML = xmlHttp.responseText
+  status = xmlHttp.status
+  xmlHttp.Abort
+End Sub
+
+' Send http request
+Sub send_http_request_debug(ByVal url)
   Set xmlHttp = WScript.CreateObject("MSXML2.ServerXMLHTTP")
   xmlHttp.Open "GET", url, False
   xmlHttp.Send ""

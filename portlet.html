@@ -5,7 +5,7 @@
 %>
 
 <div class="logo">
-  <a href="sarah/<%=key%>?mode=test" class="ajax"><img src="/assets/<%=key%>/images/skype.png" title="Test skype"></a>
+  <a href="sarah/<%=key%>?mode=test" class="ajax"><% if (info.vbsalive==1) { %><img src="/assets/<%=key%>/images/skype.png" title="Test skype"><% } else { %><img src="/assets/<%=key%>/images/skype2.png" title="Test skype"> <% } %></a>
 </div>
 
 <div class="text">

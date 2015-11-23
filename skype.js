@@ -38,9 +38,11 @@ const cst_msg_missedcallintro="Voici la liste des appels manqués.";
 const cst_msg_missedcallintro2="Oui on a essayé de vous joindre";
 const cst_maxtimeout=20*1000;
 const cst_minperiod_sameid=5*60*1000;
+const cst_alivefreq=60;
 const cst_month=["janvier","février","mars","avril","mai","juin","juillet","aout","septembre","octobre","novembre","décembre"];
 
 // Global variable
+var g_debug=16;
 var g_script_skype_path="";
 var	g_timeout=0;
 var g_lastisconnected="";
@@ -48,25 +50,59 @@ var g_status="";
 var g_account="";
 var g_call=new Array();
 var g_missedcall=new Array();
+var g_runskypeonclient=0;
+var g_alive=0;
+
+function run(SARAH, app, param)
+{
+	switch(g_runskypeonclient)
+	{
+		case 1:
+			SARAH.remote({'app' : app, 'runp' : param });
+			break;
+		case 0:
+			var exec = require('child_process').exec;
+
+			var process = '"'+app+'" '+param;
+			var child = exec(process, function (error, stdout, stderr) 
+			{
+				if (error !== null) 
+					console.log('exec error: ' + error+ "( " + process + " )");
+			});
+			break;
+	}
+	return 0;
+}
 
 exports.init = function (SARAH)
 {
 	var cfg=SARAH.ConfigManager.getConfig();
 	cfg = cfg.modules.skype;
 	g_script_skype_path=__dirname + "\\" + cst_skypevbs;
-	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path });
-	var parameter="updateparameter \"" + __dirname + "\" \"" +cfg.Name1+"\" \""+cfg.Name2+"\" \""+cfg.Name3+"\"";
-	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path + " " + parameter });
+	// Kill all old skype.vbs background process
+	run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " cleanwscript");
+	setTimeout(function()
+	{
+	  // launch skype.vbs daemon
+	  run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " daemon " + cst_alivefreq);
+	  setTimeout(function()
+					{
+						var parameter="updateparameter \"" + __dirname + "\" \"" +cfg.Name1+"\" \""+cfg.Name2+"\" \""+cfg.Name3+"\"";
+						run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " " + parameter);
+					}, 2000);
+	}, 3000);
 }
 
 exports.release = function (SARAH)
 {
-	SARAH.remote({'run' : cst_wscript, 'runp' : g_script_skype_path + " " + "cleanwscript"});
+	run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " " + "cleanwscript");
 }
 
 exports.action = function(data, callback, config, SARAH)
 {
-	if (data.mode=="call" || data.mode=="callvideo" || data.mode=="isconnected" || data.mode=="calllast" || data.mode=="calllastvideo")
+	if (data.mode=="debug")
+		console.log("SkypeVBS: " + data.comment);
+	else if (data.mode=="call" || data.mode=="callvideo" || data.mode=="isconnected" || data.mode=="calllast" || data.mode=="calllastvideo")
 	{
 	   if (data.mode=="calllast" || data.mode=="calllastvideo")
 	   {
@@ -92,7 +128,7 @@ exports.action = function(data, callback, config, SARAH)
 	   else
 		 timer=0;
 	  if (data.mode!="")
-		SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " \"" + data.name + "\""});
+		run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " " + data.mode + " \"" + data.name + "\"");
 	}
 	else if (data.mode=="connectaccount")
 	{
@@ -101,7 +137,7 @@ exports.action = function(data, callback, config, SARAH)
 	  if (cfg.Skype_path!="") 
 	  {
 		exe = cfg.Skype_path + "\\" + "Skype.exe";
-		SARAH.remote({ 'run' : exe, 'runp' : "/shutdown"});
+		run(SARAH, exe, "/shutdown");
 		var login="";
 		var password="";
 		var name="";
@@ -129,8 +165,8 @@ exports.action = function(data, callback, config, SARAH)
 		if (login!="" && password!="" && name!="")
 		{
 			bf.speak(cst_msg_connectaccount + " " + "\"" + name + "\"", SARAH);
-			setTimeout(function(){SARAH.remote({ 'run' : exe, 'runp' : "\"/username:" + login + "\" \"" + "/password:" + password + "\""});
-							  setTimeout(function(){SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " selectfriendsilent " + __dirname + " " + "\"" + cfg.Skype_list + "\""});
+			setTimeout(function(){run(SARAH, exe, "\"/username:" + login + "\" \"" + "/password:" + password + "\"");
+							  setTimeout(function(){run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " selectfriendsilent " + __dirname + " " + "\"" + cfg.Skype_list + "\"");
 												   },10000);
 							 },2000);
 		}
@@ -175,7 +211,13 @@ exports.action = function(data, callback, config, SARAH)
 	else if (data.mode=="test")
 	{
 	  bf.speak(cst_msg_okletstry, SARAH);
-	  SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " " + __dirname});
+	  run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " " + data.mode + " " + __dirname);
+	}
+	else if (data.mode=="alive")
+	{
+	  if ((g_debug&1)!=0) 
+		console.log("skype:alive");
+	  g_alive=new Date().getTime()+cst_alivefreq*1000;
 	}
 	else
 	{
@@ -202,7 +244,7 @@ exports.action = function(data, callback, config, SARAH)
 	  {
 		  if (text!="") 
 			bf.speak(text, SARAH);
-		  SARAH.remote({ 'run' : cst_wscript, 'runp' : g_script_skype_path + " " + data.mode + " " + __dirname + optionnal});
+		  run(SARAH, cst_wscript, g_script_skype_path + " " + g_debug + " " + data.mode + " " + __dirname + optionnal);
 	  }
 	}
 	callback();
@@ -224,6 +266,7 @@ exports.getBasic = function(SARAH)
   info={};
   info.account=g_account;
   info.status=g_status;
+  info.vbsalive=(g_alive>=new Date().getTime()?1:0);
   info.lastmissedcall={};
   if (g_call.length>0)
 	info.lastcall=g_call[g_call.length-1];
